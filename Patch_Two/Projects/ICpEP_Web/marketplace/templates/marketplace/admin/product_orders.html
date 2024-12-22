@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orders for {{ product.product_name }} | Marketplace Admin</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+</head>
+<body>
+    <header>
+        <h1>Orders for {{ product.product_name }}</h1>
+        <p>Price: ₱{{ product.price }}</p>
+        <p>Stock: {{ product.quantity }}</p>
+    </header>
+
+    <main>
+        <section id="filter-form">
+            <!-- Filter Form -->
+            <form method="get" action="{% url 'marketplace:product_orders' product.product_id %}">
+                <label for="acad_year">Filter by Year:</label>
+                <input type="number" id="acad_year" name="acad_year" placeholder="Enter Year" value="{{ request.GET.acad_year }}">
+            
+                <label for="acad_block">Filter by Block:</label>
+                <input type="text" id="acad_block" name="acad_block" placeholder="Enter Block" value="{{ request.GET.acad_block }}">
+            
+                <button type="submit">Filter</button>
+            </form>                   
+        </section>
+
+        <section id="product-orders">
+            <h2>Order List</h2>
+            <table class="table-orders">
+                <thead>
+                    <tr>
+                        <th>User</th>
+                        <th>Year & Block</th>
+                        <th>Tag*</th>
+                        <th>Quantity Ordered</th>
+                        <th>Order Status</th>
+                        <th>Order Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in orders %}
+                        <tr>
+                            <td>{{ order.user.last_name }}, {{ order.user.given_name }}</td>
+                            <td>{{ order.user.acad_year }}{{ order.user.acad_block }}</td>
+                            <td>{{ order.product.tag }}</td>
+                            <td>{{ order.quantity }}</td>
+                            <td>{{ order.order_status }}</td>
+                            <td>{{ order.order_date }}</td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="5">No orders available for this product.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+
+        <section id="navigation">
+
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; {{ current_year }} ICpEP. All rights reserved.</p>
+    </footer>
+</body>
+</html>

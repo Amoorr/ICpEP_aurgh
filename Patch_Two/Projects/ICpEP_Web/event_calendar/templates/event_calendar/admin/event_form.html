@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% if event %}Edit Event{% else %}Create Event{% endif %}</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+</head>
+<body>
+    <h1>{% if event %}Edit Event{% else %}Create Event{% endif %}</h1>
+    <form method="post">
+        {% csrf_token %}
+        
+        <!-- Render the Event Form -->
+        <h2>Event Details</h2>
+        {{ event_form.as_p }}
+        
+        <!-- Conditionally render the AttendanceSpan form -->
+        <div id="attendance-form" style="display: none;">
+            <h2>Attendance Details</h2>
+            {{ attendance_form.as_p }}
+        </div>
+
+        <button type="submit">{% if event %}Update Event{% else %}Create Event{% endif %}</button>
+    </form>
+    <script>
+        // Show or hide the Attendance Form based on the 'needs_attendance' checkbox
+        document.addEventListener('DOMContentLoaded', function () {
+            const needsAttendanceCheckbox = document.querySelector('input[name="needs_attendance"]');
+            const attendanceFormDiv = document.getElementById('attendance-form');
+
+            if (needsAttendanceCheckbox) {
+                // Initial visibility
+                attendanceFormDiv.style.display = needsAttendanceCheckbox.checked ? 'block' : 'none';
+                
+                // Toggle visibility on checkbox change
+                needsAttendanceCheckbox.addEventListener('change', function () {
+                    attendanceFormDiv.style.display = this.checked ? 'block' : 'none';
+                });
+            }
+        });
+    </script>
+</body>
+</html>

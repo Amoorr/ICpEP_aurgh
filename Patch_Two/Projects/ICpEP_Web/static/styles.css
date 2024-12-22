@@ -1,0 +1,84 @@
+/* General styles */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: #f4f4f9;  /* Light background for contrast */
+}
+h1, h2 {
+    color: #003366;  /* Dark blue for headings */
+}
+a {
+    color: #d6a300;  /* Gold color for links */
+    text-decoration: none;
+}
+a:hover {
+    text-decoration: underline;
+}
+/* Event List Styles */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+th, td {
+    padding: 12px;
+    text-align: left;
+    border: 1px solid #ddd;
+}
+th {
+    background-color: #003366;  /* Dark blue for table headers */
+    color: white;
+}
+tr:hover {
+    background-color: #e7e7e7;  /* Light gray on row hover */
+}
+/* Form Styles */
+form {
+    background-color: white;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+}
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+input[type="text"],
+input[type="date"],
+input[type="time"],
+select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+button {
+    background-color: #d6a300;  /* Gold for buttons */
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+button:hover {
+    background-color: #b59400;  /* Darker gold on hover */
+}
+/* Messages for success/error */
+.success, .error {
+    padding: 10px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+}
+.success {
+    background-color: #d4edda;  /* Light green for success messages */
+    color: #155724;
+}
+.error {
+    background-color: #f8d7da;  /* Light red for error messages */
+    color: #721c24;
+}

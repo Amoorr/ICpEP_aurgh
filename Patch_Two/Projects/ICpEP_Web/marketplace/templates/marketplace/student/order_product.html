@@ -1,0 +1,50 @@
+<!-- 
+ FUNCTION: Prompting order details for a product
+
+ - Unfinished, picture not yet displayed
+ - Asks for quantity of order
+ - If Buyable or with stocks, cannot order beyond stocks
+ - Shows price, but not total
+-->
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order {{ product.product_name }} | ICpEP Marketplace</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+</head>
+<body>
+    <header>
+        <h1>{{ product.product_name }}</h1>
+        <p>Price: ₱{{ product.price }}</p>
+        {% if is_preorder %}
+            <p>This product is available for pre-order.</p>
+        {% else %}
+            <p>Available Quantity: {{ product.quantity }}</p>
+        {% endif %}
+    </header>
+
+    <main>
+        <section id="order-form">
+            <form method="POST" class="form-container">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="btn-primary">{% if is_preorder %}Pre-order{% else %}Order{% endif %}</button>
+            </form>
+        </section>
+
+        <section id="navigation">
+            <p><a href="{% url 'marketplace:student_view_product' product.product_id %}"class="btn-secondary">Back to Product Details</a></p>
+            <p><a href="{% url 'marketplace:student_marketplace' %}" class="btn-secondary">Back to Marketplace</a></p>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; {{ current_year }} ICpEP. All rights reserved.</p>
+    </footer>
+</body>
+</html>

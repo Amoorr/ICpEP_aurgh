@@ -1,0 +1,155 @@
+<!-- FUNCTION: Page for admins to register a new account, be it another admin or student account
+
+It contains fields for asking name, password and roles (admin and student)
+
+    - There are messages before the password fields if the entered password is weak, or the password does not match
+    - There must be extra fields if the toggled role is Student, asking for membership ID, student ID, year and block.
+    - There's a notification if the creation of account is successful or not 
+    
+    -->
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'styles.css' %}">
+    <script>
+        function toggleFields() {
+            const role = document.getElementById('id_role').value;
+            const studentFields = document.querySelectorAll('.student-field');
+
+            if (role === 'student') {
+                studentFields.forEach(field => field.style.display = 'block');
+            } else {
+                studentFields.forEach(field => field.style.display = 'none');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            toggleFields();
+            document.getElementById('id_role').addEventListener('change', toggleFields);
+
+            // Show pop-up if triggered
+            const popup = document.getElementById('popup-notification');
+            if (popup) {
+                popup.style.display = 'block';
+                setTimeout(() => {
+                    popup.style.display = 'none';
+                }, 3000); // Auto-hide after 3 seconds
+            }
+
+            // Real-time password feedback
+            const password1Field = document.getElementById('id_password1');
+            const password2Field = document.getElementById('id_password2');
+            const feedbackDiv = document.getElementById('password-feedback');
+            const matchFeedbackDiv = document.getElementById('password-match-feedback');
+
+            password1Field.addEventListener('input', () => {
+                const password = password1Field.value;
+                let feedback = '';
+                if (password.length < 8) {
+                    feedback = 'Password must be at least 8 characters long.';
+                } else if (!/[A-Z]/.test(password)) {
+                    feedback = 'Password must contain at least one uppercase letter.';
+                } else if (!/[a-z]/.test(password)) {
+                    feedback = 'Password must contain at least one lowercase letter.';
+                } else if (!/[0-9]/.test(password)) {
+                    feedback = 'Password must contain at least one digit.';
+                } else if (!/[@$!%*?&]/.test(password)) {
+                    feedback = 'Password must contain at least one special character.';
+                } else {
+                    feedback = 'Password strength is good.';
+                }
+                feedbackDiv.textContent = feedback;
+                feedbackDiv.style.color = feedback === 'Password strength is good.' ? 'green' : 'red';
+            });
+
+            password2Field.addEventListener('input', () => {
+                if (password1Field.value !== password2Field.value) {
+                    matchFeedbackDiv.textContent = 'Passwords do not match.';
+                    matchFeedbackDiv.style.color = 'red';
+                } else {
+                    matchFeedbackDiv.textContent = 'Passwords match.';
+                    matchFeedbackDiv.style.color = 'green';
+                }
+            });
+        });
+    </script>
+    <style>
+        /* Pop-up notification styling */
+        #popup-notification {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #4caf50;
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            display: none; /* Initially hidden */
+        }
+
+        #password-feedback, #password-match-feedback {
+            font-size: small;
+        }
+    </style>
+</head>
+<body>
+    <h2>Register</h2>
+
+    <!-- Pop-up Notification -->
+    {% if popup_message %}
+    <div id="popup-notification">
+        {{ popup_message }}
+    </div>
+    {% endif %}
+
+    <form method="POST">
+        {% csrf_token %}
+        <div>
+            {{ form.given_name.label_tag }} {{ form.given_name }}
+        </div>
+        <div>
+            {{ form.last_name.label_tag }} {{ form.last_name }}
+        </div>
+        <div>
+            {{ form.email.label_tag }} {{ form.email }}
+        </div>
+        <div>
+            {{ form.password1.label_tag }} {{ form.password1 }}
+            <div id="password-feedback" style="color: red;"></div> <!-- Password feedback -->
+        </div>
+        <div>
+            {{ form.password2.label_tag }} {{ form.password2 }}
+            <div id="password-match-feedback" style="color: red;"></div> <!-- Password match feedback -->
+        </div>
+        <div>
+            {{ form.role.label_tag }} {{ form.role }}
+        </div>
+        
+        <!-- Fields specific to students -->
+        <div class="student-field" style="display: none;">
+            {{ form.acad_year.label_tag }} {{ form.acad_year }}
+        </div>
+        <div class="student-field" style="display: none;">
+            {{ form.acad_block.label_tag }} {{ form.acad_block }}
+        </div>
+        <div class="student-field" style="display: none;">
+            {{ form.membership_id.label_tag }} {{ form.membership_id }}
+        </div>
+        <div class="student-field" style="display: none;">
+            {{ form.student_id.label_tag }} {{ form.student_id }}
+        </div>
+
+        <button type="submit">Register</button>
+    </form>
+    <a href="{% url 'accounts:admin_accounts' %}" class="btn">Go Back</a>
+</body>
+</html>

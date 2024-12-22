@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <!-- Embedded CSS -->
+    <style>
+        /* General Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f5f7;
+            color: #333;
+            display: flex;
+            min-height: 100vh;
+            flex-direction: column;
+        }
+
+        /* Sidebar Styling */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: -250px;
+            width: 250px;
+            height: 100%;
+            background-color: #333;
+            color: #fff;
+            overflow-y: auto;
+            transition: left 0.3s ease;
+            padding-top: 20px;
+            z-index: 1000;
+        }
+
+        .sidebar.active {
+            left: 0;
+        }
+
+        .sidebar h3 {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+            border-bottom: 1px solid #555;
+            padding-bottom: 10px;
+        }
+
+        .sidebar a {
+            display: block;
+            color: #fff;
+            text-decoration: none;
+            padding: 12px 20px;
+            transition: background 0.3s;
+            font-size: 1rem;
+        }
+
+        .sidebar a:hover {
+            background-color: #575757;
+        }
+
+        .close-sidebar {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #ff5c5c;
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+        }
+
+        /* Hamburger Icon */
+        .hamburger {
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            cursor: pointer;
+            z-index: 1001;
+        }
+
+        .hamburger div {
+            width: 35px;
+            height: 4px;
+            background-color: #333;
+            margin: 6px 0;
+            border-radius: 2px;
+            transition: 0.4s;
+        }
+
+        .hamburger.active div:nth-child(1) {
+            transform: rotate(45deg) translate(5px, 5px);
+        }
+        
+        .hamburger.active div:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger.active div:nth-child(3) {
+            transform: rotate(-45deg) translate(5px, -5px);
+        }
+
+
+        /* Content Area */
+        .content {
+            flex: 1;
+            padding: 40px;
+            margin-left: 0;
+            transition: margin-left 0.3s ease;
+        }
+
+        .content.shift {
+            margin-left: 250px;
+        }
+
+        /* Summary Cards */
+        .summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .summary-card {
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .summary-card h3 {
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            color: #007bff;
+        }
+
+        .summary-card p {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .summary-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 10px 20px;
+            background-color: #333;
+            color: #fff;
+        }
+
+        @media (max-width: 768px) {
+        .summary {
+            grid-template-columns: 1fr;
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <!-- Hamburger Icon -->
+    <div class="hamburger" onclick="toggleSidebar()" aria-label="Toggle Sidebar">
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <button class="close-sidebar" onclick="toggleSidebar()">&times;</button>
+        <h3>Admin Options</h3>
+        <a href="{% url 'admin_dashboard' %}" class="nav-link">View Summary</a>
+        <a href="{% url 'accounts:admin_list' %}" class="nav-link">Manage Accounts</a>
+        <a href="{% url 'event_calendar:admin_calendar' %}" class="nav-link">Manage Events</a>
+        <a href="{% url 'marketplace:admin_marketplace' %}" class="nav-link">Manage Marketplace</a>
+        <a href="{% url 'news:admin_news' %}" class="nav-link">Manage News</a>
+        <a href="{% url 'accounts:logout' %}" >Logout</a>
+    </div>
+
+    <!-- Content Area -->
+    <div class="content" id="content-area">
+        <h1>Admin Dashboard</h1>
+        <p>Welcome to the admin dashboard! Select an option from the sidebar to view details here.</p>
+
+        <!-- Placeholder Summary Cards -->
+        <div class="summary">
+            <div class="summary-card">
+                <h3>Total Active Accounts</h3>
+                <p>{{ active_accounts }}</p>
+            </div>
+            <div class="summary-card">
+                <h3>Total Inactive Accounts</h3>
+                <p>{{ inactive_accounts }}</p>
+            </div>
+            <div class="summary-card">
+                <h3>Admin Accounts</h3>
+                <p>{{ admin_accounts }}</p>
+            </div>
+            <div class="summary-card">
+                <h3>Student Accounts</h3>
+                <p>{{ student_accounts }}</p>
+            </div>
+            <div class="summary-card">
+                <h3>Pre-Order Products</h3>
+                <p>{{ pre_order_products }}</p>
+            </div>
+            <div class="summary-card">
+                <h3>Buyable Products</h3>
+                <p>{{ buyable_products }}</p>
+            </div>
+            <div class="summary-card">
+                <h3>Net Sales</h3>
+                <p>${{ net_sales }}</p>
+            </div>
+            <div class="summary-card">
+                <h3>Finished Events</h3>
+                <p>{{ finished_events }}</p>
+            </div>
+            <div class="summary-card">
+                <h3>Unfinished Events</h3>
+                <p>{{ unfinished_events }}</p>
+            </div>
+            <div class="summary-card">
+                <h3>General Events</h3>
+                <p>{{ general_events }}</p>
+            </div>
+            <div class="summary-card">
+                <h3>Organizational Events</h3>
+                <p>{{ organizational_events }}</p>
+            </div>
+            <div class="summary-card">
+                <h3>Total News Articles</h3>
+                <p>{{ total_news }}</p>
+            </div>
+        </div> 
+
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2024 ICpEP. All rights reserved.</p>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        // Sidebar toggle
+        function toggleSidebar() {
+            const sidebar = document.getElementById("sidebar");
+            const content = document.getElementById("content-area");
+            const hamburger = document.querySelector(".hamburger");
+
+            sidebar.classList.toggle("active");
+            content.classList.toggle("shift");
+            hamburger.classList.toggle("active");
+        }
+
+
+        // Dynamic content loading
+        // Dynamic content loading
+    $(document).ready(function () {
+
+        $(".ajax-link").on("click", function (e) {
+            e.preventDefault();
+        
+            const url = $(this).attr("href");
+            const contentArea = $("#content-area");
+
+            $.ajax({
+                url: url,
+                type: "GET",
+                success: function (response) {
+                    contentArea.html(response);
+            },
+            error: function () {
+                contentArea.html("<p>Failed to load the Add Product form. Please try again later.</p>");
+            }
+        });
+    });
+
+
+    // For sidebar links (you may already have this part)
+    $(".nav-link").on("click", function (e) {
+        e.preventDefault();  // Prevent default link behavior
+
+        const url = $(this).attr("href");  // Get target URL
+        const contentArea = $("#content-area"); // Target content area
+
+        // AJAX request to load content dynamically
+        $.ajax({
+            url: url,
+            type: "GET",
+            success: function (response) {
+                contentArea.html(response);
+            },
+            error: function () {
+                contentArea.html("<p>Failed to load content. Please try again later.</p>");
+            }
+        });
+    });
+});
+
+    </script>
+</body>
+</html>

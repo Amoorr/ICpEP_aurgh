@@ -1,0 +1,88 @@
+<!-- 
+ FUNCTION: to show the details of the event
+
+ - Shows the details of the events
+ - The attendance span is not yet displayed
+ - Displays if the student has made attendance (scanned QR)
+ - Shows if attendance is open py mana
+
+
+
+
+
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Details</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #007bff;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-size: 1.5em;
+        }
+        .container {
+            padding: 20px;
+            max-width: 600px;
+            margin: auto;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        .event-details h2 {
+            margin-top: 0;
+            color: #333;
+        }
+        .event-details p {
+            margin: 10px 0;
+            color: #555;
+        }
+        .status {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <header>Event Details</header>
+    <div class="container">
+        <div class="event-details">
+            <h2>{{ event.event_name }}</h2>
+            <p><strong>Tag:</strong> {{ event.event_tag }}</p>
+            <p><strong>Date:</strong> {{ event.event_date }}</p>
+            <p><strong>Time:</strong> {{ event.event_time }}</p>
+            <p><strong>Attendance Span:</strong> {{ attention_span }}</p>
+            <p>
+                <strong>Participation Status:</strong> 
+                <span class="status">
+                    {% if participated %}
+                        Participated
+                    {% else %}
+                        Not Participated
+                    {% endif %}
+                </span>
+            </p>
+            <p>
+                <strong>Attendance Open:</strong> 
+                <span class="status">
+                    {% if attention_span_active %}
+                        Yes
+                    {% else %}
+                        No
+                    {% endif %}
+                </span>
+            </p>
+        </div>
+    </div>
+</body>
+</html>

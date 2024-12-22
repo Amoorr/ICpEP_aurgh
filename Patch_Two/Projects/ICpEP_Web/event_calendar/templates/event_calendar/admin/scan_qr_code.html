@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Scanner for {{ event.event_name }}</title>
+    <script src="https://unpkg.com/html5-qrcode"></script>
+    <script src="{% static 'js/qrScript.js' %}"></script>
+    <style>
+        #buttons { margin-top: 30px; }
+        #scan-again-button, #go-to-dashboard-button, #go-back-button {
+            font-size: 18px; padding: 15px 30px; margin: 10px;
+            border: none; border-radius: 5px; cursor: pointer; transition: background-color 0.3s;
+        }
+        #scan-again-button { background-color: #4CAF50; color: white; }
+        #scan-again-button:hover { background-color: #45a049; }
+        #go-to-dashboard-button { background-color: #007BFF; color: white; }
+        #go-to-dashboard-button:hover { background-color: #0056b3; }
+        #go-back-button { background-color: #b0b0b0; color: white; }
+        #go-back-button:hover { background-color: #958f8f; }
+        #go-back-button-container { margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <div style="text-align: center;">
+        <h1>QR Code Scanning for {{ event.event_name }}</h1>
+        <div id="reader" style="width: 500px; margin: 0 auto;"></div>
+        <div id="go-back-button-container">
+            <button onclick="goBack()" id="go-back-button">Go Back</button>
+        </div>
+        <div id="show" style="display: none;">
+            <h4>Scanned Result</h4>
+            <p style="color: blue;" id="result"></p>
+            <div id="buttons">
+                <button onclick="scanAgain()" id="scan-again-button">Scan Again</button>
+                <button onclick="goToDashboard()" id="go-to-dashboard-button">Go to Admin Calendar Dashboard</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const html5Qrcode = new Html5Qrcode('reader');
+        let isScanning = false;
+
+        const qrCodeSuccessCallback = (decodedText, decodedResult) => {
+            if (decodedText && !isScanning) {
+                isScanning = true; // Prevent multiple scans
+                document.getElementById('show').style.display = 'block';
+                document.getElementById('go-back-button-container').style.display = 'none'; // Hide "Go Back" button
+                document.getElementById('result').textContent = 'Processing...';  // Inform user that we are processing the scan
+
+                fetch("{% url 'event_calendar:qr_scanner' event.event_id %}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    },
+                    body: `scanned_text=${encodeURIComponent(decodedText)}`
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.found) {
+                        document.getElementById('result').textContent = `Student found: ${data.name}`;
+                        document.getElementById('result').style.color = "green";
+                    } else {
+                        document.getElementById('result').textContent = "ID not found";
+                        document.getElementById('result').style.color = "red";
+                    }
+                    isScanning = false; // Allow next scan
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    isScanning = false;
+                    document.getElementById('result').textContent = "Error processing the scan.";
+                    document.getElementById('result').style.color = "red";
+                });
+
+                html5Qrcode.stop();
+            }
+        };
+
+        const config = { fps: 10, qrbox: { width: 250, height: 250 } };
+        html5Qrcode.start({ facingMode: "environment" }, config, qrCodeSuccessCallback);
+
+        function scanAgain() {
+            document.getElementById('show').style.display = 'none';
+            document.getElementById('go-back-button-container').style.display = 'block'; // Show "Go Back" button again
+            html5Qrcode.start({ facingMode: "environment" }, config, qrCodeSuccessCallback);
+        }
+
+        function goToDashboard() {
+            window.location.href = "/admin-dashboard";
+        }
+
+        function goBack() {
+            window.history.back();
+        }
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+    </script>
+</body>
+</html>

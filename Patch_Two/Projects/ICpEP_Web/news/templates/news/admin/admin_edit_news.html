@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit News</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+    <style>
+        /* Styling for photo preview images */
+        #photo-preview img {
+            width: 150px;
+            margin: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 5px;
+        }
+    </style>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+
+        $(document).ready(function () {
+            // Handle AJAX request when a link with class 'ajax-link' is clicked
+            $(".ajax-link").on("click", function (e) {
+                e.preventDefault();  // Prevent the default behavior of the link (full page reload)
+                
+                const url = $(this).attr("href");  // Get the URL from the href attribute
+                const contentArea = $("#content-area");  // Target the content area to load new content into
+                
+                // Send an AJAX GET request to the URL
+                $.ajax({
+                    url: url,
+                    type: "GET",
+                    success: function (response) {
+                        contentArea.html(response);  // Insert the response (new HTML) into the content area
+                    },
+                    error: function () {
+                        contentArea.html("<p>Failed to load the Add Product form. Please try again later.</p>");
+                    }
+                });
+            });
+        });
+        </script>
+</head>
+<body>
+    <h1>Edit News Article</h1>
+
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <!-- Render the form for editing news article details -->
+        <h2>News Details</h2>
+        {{ news_form.as_p }}
+
+        <!-- Render the formset for managing photos -->
+        <h2>Photos</h2>
+        {{ photo_formset.management_form }}
+
+        <!-- Display currently saved photos with captions -->
+        <div id="photo-preview">
+            {% for photo in photo_formset.queryset %}
+                <div>
+                    {% if photo.image_path %}
+                        <img src="{{ photo.image_path.url }}" alt="Existing Photo">
+                    {% else %}
+                        <p>No photo uploaded.</p>
+                    {% endif %}
+                    <p>{{ photo.caption }}</p>
+                </div>
+            {% endfor %}
+        </div>
+        
+
+        <!-- Loop through the photo formset to render photo fields for editing -->
+        {% for form in photo_formset %}
+            <div>
+                <h3>Photo {{ forloop.counter }}</h3>
+                {{ form.as_p }} <!-- Render individual photo form fields -->
+            </div>
+        {% endfor %}
+        
+
+        <button type="submit">Save Changes</button>
+    </form>
+
+    <script>
+        // JavaScript to dynamically preview new uploaded images
+        document.addEventListener('DOMContentLoaded', function () {
+            const photoInputs = document.querySelectorAll('input[type="file"]');
+            const previewContainer = document.getElementById('photo-preview');
+
+            photoInputs.forEach(input => {
+                input.addEventListener('change', function (event) {
+                    const files = event.target.files;
+
+                    // Clear previous previews before displaying new ones
+                    previewContainer.innerHTML = '';
+
+                    // Loop through selected files and display image previews
+                    Array.from(files).forEach(file => {
+                        if (file.type.startsWith('image/')) { // Ensure the file is an image
+                            const reader = new FileReader();
+
+                            // Once the file is read, create an image element with its data
+                            reader.onload = function (e) {
+                                const img = document.createElement('img');
+                                img.src = e.target.result;
+                                previewContainer.appendChild(img);
+                            };
+
+                            reader.readAsDataURL(file); // Read the image file as a data URL
+                        }
+                    });
+                });
+            });
+        });
+
+
+    </script>
+</body>
+</html>

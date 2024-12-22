@@ -1,0 +1,43 @@
+<!--
+FUNCTION: For editing the order, acccessible in viewing the cart
+
+- Same with ordering a product
+- Unfinished, picture as well
+-->
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Order | ICpEP Marketplace</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+</head>
+<body>
+    <header>
+        <h1>Edit Order for {{ cart_item.product.product_name }}</h1>
+        <p>Price: ₱{{ cart_item.product.price }}</p>
+        <p>Current Quantity: {{ cart_item.quantity }}</p>
+    </header>
+
+    <main>
+        <section id="order-form">
+            <form method="POST" class="form-container">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="btn-primary">Update Order</button>
+            </form>
+        </section>
+
+        <section id="navigation">
+            <p><a href="{% url 'marketplace:view_cart' %}" class="btn-secondary">Back to Cart</a></p>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; {{ current_year }} ICpEP. All rights reserved.</p>
+    </footer>
+</body>
+</html>

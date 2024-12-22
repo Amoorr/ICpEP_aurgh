@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'styles.css' %}">
+</head>
+<body>
+    <h2>Login</h2>
+
+    <!-- Display any non-field errors (e.g., admin login error) -->
+    {% if form.non_field_errors %}
+        <div style="color: red; margin-bottom: 20px;">
+            <strong>{{ form.non_field_errors }}</strong>
+        </div>
+    {% endif %}
+
+    <!-- Display field-specific errors (like invalid username or password) -->
+    {% if form.errors %}
+        <div style="color: red; margin-bottom: 20px;">
+            <strong>Invalid credentials, please try again.</strong>
+        </div>
+    {% endif %}
+
+    <!-- Login Form -->
+    <form method="POST">
+        {% csrf_token %}
+
+        <!-- Render the username (email) field explicitly -->
+        <div>
+            <label for="id_username">Email:</label>
+            {{ form.username }}  <!-- Render the username field -->
+        </div>
+
+        <!-- Render the password field explicitly -->
+        <div>
+            <label for="id_password">Password:</label>
+            {{ form.password }}  <!-- Render the password field -->
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit">Login</button>
+    </form>
+
+    <!-- Redirect to admin login page -->
+    <div>
+        <p>Are you an admin? <a href="{% url 'admin_login' %}">Click here to login as admin.</a></p>
+    </div>
+</body>
+</html>

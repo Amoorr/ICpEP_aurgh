@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Account</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const popup = document.getElementById('popup-notification');
+            if (popup) {
+                popup.style.display = 'block';
+                setTimeout(() => {
+                    popup.style.display = 'none';
+                }, 3000); // Auto-hide after 3 seconds
+            }
+        });
+    </script>
+    <style>
+        /* Pop-up notification styling */
+        #popup-notification {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #4caf50;
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            display: none; /* Initially hidden */
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Edit Account: {{ user.given_name }} {{ user.last_name }}</h1>
+
+    <!-- Pop-up Notification -->
+    {% if popup_message %}
+    <div id="popup-notification">
+        {{ popup_message }}
+    </div>
+    {% endif %}
+
+    <form method="POST">
+        {% csrf_token %}
+        <div class="form-group">
+            {{ form.as_p }}  <!-- Render the form fields -->
+        </div>
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+        <a href="{% url 'accounts:admin_list' %}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+
+</body>
+</html>

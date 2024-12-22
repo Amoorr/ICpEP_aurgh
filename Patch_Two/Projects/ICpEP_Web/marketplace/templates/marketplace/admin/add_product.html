@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add New Product | Marketplace Admin</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+</head>
+<body>
+    <header>
+        <h1>Add New Product</h1>
+    </header>
+
+    <main>
+        <section id="add-product-form">
+            <form id="product-form" method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ product_form.as_p }}  <!-- Product form fields -->
+            
+                <label for="images">Product Images</label>
+                <input type="file" name="images" multiple>  <!-- Allow multiple images to be uploaded -->
+            
+                <button type="submit">Save Product</button>
+            </form>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; {{ current_year }} ICpEP. All rights reserved.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const tagField = document.querySelector('#id_tag');
+            const quantityField = document.querySelector('#id_quantity');
+            
+            if (!tagField || !quantityField) return; // Exit if fields don't exist
+
+            const quantityFieldContainer = quantityField.closest('p');
+
+            function toggleQuantityField() {
+                if (tagField.value === 'Buyable') {
+                    quantityFieldContainer.style.display = 'block';
+                    quantityField.required = true;
+                } else {
+                    quantityFieldContainer.style.display = 'none';
+                    quantityField.required = false;
+                    quantityField.value = ''; // Clear the input when hidden
+                }
+            }
+
+            // Add event listener for change events on the tag field
+            tagField.addEventListener('change', toggleQuantityField);
+            toggleQuantityField(); // Run on page load to set initial visibility
+
+            // Handle form submission via AJAX
+            const form = document.getElementById('product-form');
+            form.addEventListener('submit', function (e) {
+                e.preventDefault(); // Prevent default form submission
+
+                const formData = new FormData(form); // Collect form data
+
+                // AJAX request to submit form
+                fetch('{% url "marketplace:add_product" %}', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRFToken': document.querySelector('[name="csrfmiddlewaretoken"]').value // CSRF token
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert("Product added successfully!");
+                        // Optionally, clear the form or redirect after successful submission
+                    } else {
+                        alert("Error: " + data.error);
+                    }
+                })
+                .catch(error => {
+                    alert("Something went wrong: " + error);
+                });
+            });
+        });
+    </script>
+</body>
+</html>

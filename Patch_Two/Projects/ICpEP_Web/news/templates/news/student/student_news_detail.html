@@ -1,0 +1,79 @@
+<!-- 
+ FUNCTION: To display the content of the news
+-->
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ news_article.title }}</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+    <style>
+        
+        .photos {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 1rem 0;
+        }
+        .photos img {
+            width: 1000px;
+            height: auto;
+            border-radius: 5px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+        }
+        .photos p {
+            text-align: center;
+            font-size: 0.9rem;
+            color: #666;
+        }
+        .view-count {
+            margin-top: 1rem;
+            font-size: 1.1rem;
+            color: #555;
+        }
+        .back-link {
+            display: inline-block;
+            margin-top: 1.5rem;
+            padding: 0.5rem 1rem;
+            background: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background 0.3s ease;
+        }
+        .back-link:hover {
+            background: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>{{ news_article.title }}</h1>
+    </header>
+    <main>
+        <p><strong>Author:</strong> {{ news_article.author }}</p>
+        <p><strong>Published on:</strong> {{ news_article.publication_date }}</p>
+        <h2>Article Content</h2>
+        <p>{{ news_article.content }}</p>
+
+        <h2>Photos</h2>
+        <div class="photos">
+            {% for photo in photos %}
+                <div>
+                    <img src="{{ photo.image_path.url }}" alt="Photo for {{ news_article.title }}">
+                    <p>{{ photo.caption }}</p>
+                </div>
+            {% empty %}
+                <p>No photos available.</p>
+            {% endfor %}
+        </div>
+
+        <p class="view-count"><strong>View Count:</strong> {{ news_article.view_count }}</p>
+        <a href="{% url 'news:student_news_list' %}" class="back-link">Back to news list</a>
+    </main>
+</body>
+</html>

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Participants for {{ event.event_name }}</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+
+        $(document).ready(function () {
+            // Handle AJAX request when a link with class 'ajax-link' is clicked
+            $(".ajax-link").on("click", function (e) {
+                e.preventDefault();  // Prevent the default behavior of the link (full page reload)
+                
+                const url = $(this).attr("href");  // Get the URL from the href attribute
+                const contentArea = $("#content-area");  // Target the content area to load new content into
+                
+                // Send an AJAX GET request to the URL
+                $.ajax({
+                    url: url,
+                    type: "GET",
+                    success: function (response) {
+                        contentArea.html(response);  // Insert the response (new HTML) into the content area
+                    },
+                    error: function () {
+                        contentArea.html("<p>Failed to load the Add Product form. Please try again later.</p>");
+                    }
+                });
+            });
+        });
+        </script>
+<h1>Participants for {{ event.event_name }}</h1>
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Status</th>
+            <th>Time In</th>
+            <th>Time Out</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for participant in participants %}
+            <tr>
+                <td>{{ participant.user.given_name }} {{ participant.user.last_name }}</td>
+                <td>{{ participant.event_state }}</td>
+                <td>{{ participant.time_in|default:"Not yet timed in" }}</td>
+                <td>{{ participant.time_out|default:"Not yet timed out" }}</td>
+            </tr>
+        {% empty %}
+            <tr>
+                <td colspan="4">No participants yet.</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+

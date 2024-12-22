@@ -1,0 +1,90 @@
+<!-- 
+ FUNCTION: To view the details of the product
+
+ - Shows the details, such as name, price, tag, pictures and description
+ - Shows Order Button
+
+
+
+-->
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ product.product_name }} | Details</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+</head>
+<body>
+    <header>
+        <h1>{{ product.product_name }}</h1>
+    </header>
+
+    <main>
+        <section id="product-images">
+            <h2>Product Images</h2>
+            <div class="product-gallery">
+                {% if product.images.exists %}
+                    {% for image in product.images.all %}
+                        <img src="{{ image.image.url }}" alt="{{ product.product_name }} Image" width="200">
+                    {% endfor %}
+                {% else %}
+                    <p>No images available for this product.</p>
+                {% endif %}
+            </div>
+        </section>
+
+        <section id="product-details">
+            <table class="table-details">
+                <thead>
+                    <tr>
+                        <th>Detail</th>
+                        <th>Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Description</strong></td>
+                        <td>{{ product.product_description }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Price</strong></td>
+                        <td>₱{{ product.price }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Stock</strong></td>
+                        <td>{{ product.quantity }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Tag</strong></td>
+                        <td>{{ product.tag }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section id="actions">
+            <h2>Actions</h2>
+            <table class="table-actions">
+                <tbody>
+                    <tr>
+                        <td><a href="{% url 'marketplace:order_product' product.product_id %}" class="btn-primary">Order this Product</a></td>
+                    </tr>
+                    <tr>
+                        <td><a href="{% url 'marketplace:student_marketplace' %}" class="btn-secondary">Back to Marketplace</a></td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; {{ current_year }} ICpEP. All rights reserved.</p>
+    </footer>
+</body>
+</html>

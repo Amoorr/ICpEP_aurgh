@@ -1,0 +1,54 @@
+<!-- 
+ FUNCTION: To display the total news
+
+ - Shows the title, published date of the news
+ - Search by title function
+ - Every news can be clicked
+ - UNFINISHED: Subhead and photo
+
+
+
+-->
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>News List</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+</head>
+<body>
+    <header>
+        <h1>News Articles</h1>
+    </header>
+    <main>
+        <!-- Search form -->
+        <form method="get" action="{% url 'news:student_news_list' %}" class="search-form">
+            <input type="text" name="search" placeholder="Search by title" value="{{ request.GET.search }}">
+            <button type="submit">Search</button>
+        </form>
+
+        <!-- List of news articles -->
+        <ul class="news-list">
+            {% for news in news_list %}
+                <li>
+                    <a href="{% url 'news:student_news_detail' news.article_id %}">
+                        {{ news.title }}
+                    </a>
+                    <p>Published on: {{ news.publication_date }}</p>
+                </li>
+            {% empty %}
+                <li class="no-news">No news articles found.</li>
+            {% endfor %}
+        </ul>
+    </main>
+
+    <section id="navigation">
+        <p><a href="{% url 'student_dashboard' %}" class="btn-primary">Back to Student Dashboard</a></p>
+    </section>
+</body>
+</html>

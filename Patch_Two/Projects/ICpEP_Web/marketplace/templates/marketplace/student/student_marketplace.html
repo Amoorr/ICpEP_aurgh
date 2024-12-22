@@ -1,0 +1,66 @@
+<!-- FUNCTION: To display all the available products
+
+- Shows the picture and product name 
+- Shows the view cart button 
+- Each product can be clicked to view their details
+
+-->
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Marketplace | ICpEP</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+</head>
+<body>
+    <header>
+        <h1>Marketplace</h1>
+    </header>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Product Image</th>
+                <th>Product Name</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for product in products %}
+            <tr>
+                <td>
+                    {% with product.images.first as main_image %}
+                    {% if main_image %}
+                        <img src="{{ main_image.image.url }}" alt="{{ product.product_name }}" width="100">
+                    {% else %}
+                        <img src="{% static 'placeholder.png' %}" alt="No Image Available" width="100">
+                    {% endif %}
+                    {% endwith %}
+                </td>
+                <td>
+                    <a href="{% url 'marketplace:student_view_product' product.product_id %}">
+                        {{ product.product_name }}
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <tr>
+        <td><a href="{% url 'marketplace:view_cart' %}" class="btn-primary">View Cart</a></td>
+    </tr>
+
+    <section id="navigation">
+        <p><a href="{% url 'marketplace:student_dashboard' %}" class="btn-secondary">Back to Dashboard</a></p>
+    </section>
+
+    <footer>
+        <p>&copy; {{ current_year }} ICpEP. All rights reserved.</p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,85 @@
+<!-- 
+ FUNCTION: To display the lists of events
+
+ - Displays the title, date and time
+ - Can be clicked to view details
+-->
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Calendar</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #007bff;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-size: 1.5em;
+        }
+        .container {
+            padding: 20px;
+            max-width: 800px;
+            margin: auto;
+        }
+        .event-card {
+            background-color: #ffffff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .event-info {
+            flex: 1;
+        }
+        .event-info h3 {
+            margin: 0 0 5px;
+            color: #333;
+        }
+        .event-info p {
+            margin: 5px 0;
+            color: #555;
+        }
+        .details-link {
+            text-decoration: none;
+            color: #007bff;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <header>Event Calendar</header>
+    <div class="container">
+        {% if events %}
+            {% for event in events %}
+                <div class="event-card">
+                    <div class="event-info">
+                        <h3>{{ event.event_name }}</h3>
+                        <p>Tag: {{ event.event_tag }}</p>
+                        <p>Date: {{ event.event_date }}</p>
+                        <p>Time: {{ event.event_time }}</p>
+                    </div>
+                    <a href="{% url 'event_calendar:event_details' event.event_id %}" class="details-link">View Details</a>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>No events are currently available.</p>
+        {% endif %}
+    </div>
+</body>
+</html>
